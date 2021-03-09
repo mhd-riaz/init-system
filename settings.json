@@ -1,0 +1,31 @@
+{
+    "editor.suggestSelection": "first",
+    "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
+    "workbench.iconTheme": "material-icon-theme",
+
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "[javascript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true,
+    },
+    "editor.codeActionsOnSave": {
+        // For ESLint
+        "source.fixAll.eslint": true,
+        // For TSLint
+        "source.fixAll.tslint": true,
+        // For Stylelint
+        "source.fixAll.stylelint": true
+    },
+    "auto-close-tag.SublimeText3Mode": true,
+    "auto-rename-tag.activationOnLanguage": ["html", "xml", "php", "javascript","jsx"],
+    "emmet.includeLanguages": {"django-html": "html"},
+    "files.associations": {
+        // extension name : html
+        "*.ejs": "html",
+        "*.js": "html",
+        "*.py": "html",
+        "*.jsx": "html",
+
+    } 
+    
+}
