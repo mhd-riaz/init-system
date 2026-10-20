@@ -1,0 +1,4 @@
+.agent/
+*.bak-*
+__pycache__/
+.DS_Store

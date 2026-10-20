@@ -1,0 +1,72 @@
+# Agent configuration for this repository.
+#
+# Read by rules/repo-config.md before any repository work. Authoritative for the
+# tracker, code host, identity and conventions here — it outranks detection from the
+# git remote, which is wrong whenever the code host and the work tracker differ.
+#
+# Every section is optional. Delete what does not apply; a missing key falls back to
+# detection, then to asking. Full schema: _shared/repo-config.md
+
+version: 1
+
+# Where WORK ITEMS live. Not necessarily where the code lives.
+# system: ado | github | none      <- `none` silently disables all work-item steps
+tracker:
+  system: none
+
+  # --- Azure DevOps ---
+  # system: ado
+  # org: YourOrg
+  # project: YourProject
+  # area_path: YourProject\YourTeam
+  # commit_prefix: "AB#{id} - "      # note: hyphen for commits
+  # pr_title_prefix: "AB#{id} : "    # note: colon for PR titles
+  # pr_title_max: 59
+  # default_priority: 2
+
+  # --- GitHub Issues ---
+  # system: github
+  # commit_prefix: "#{id} "
+  # pr_body_reference: "Closes #{id}"
+
+# Where BRANCHES, PRs and CI live. Set when it differs from tracker.system.
+code_host:
+  system: github
+  # owner: your-org
+  # repo: your-repo
+  # default_branch: main
+
+# Who new work is assigned to. Falls back to global state, then git config.
+# identity:
+#   display_name: Your Name
+#   email: you@example.com
+
+# A listed skill declines in one line when triggered. It cannot prevent loading.
+skills:
+  disabled: []
+
+# Set these to skip devlog discovery entirely.
+# devlog:
+#   dir: docs/devlog/{email}
+#   filename: "{yyyy}-{mon}-{name}.devlog.md"
+#   order: reverse-chronological
+
+# testing:
+#   command: ./unit-test.sh
+#   per_package_command: go test ./... -json   # used when `command` aborts early
+#   baseline_command: go test ./... -json      # clean-tree baseline
+#   coverage:
+#     backend: 90
+#     frontend: 80
+#     critical: 95
+#     pr_changed_files: 75
+
+# review:
+#   automated_reviewer: copilot
+#   require_before_close:
+#     - pr_exists
+#     - unit_tests
+#     - baseline_unbroken
+#     - commit_prefix
+#     - review_done
+#     - closing_comment
