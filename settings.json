@@ -18,14 +18,13 @@
     },
     "auto-close-tag.SublimeText3Mode": true,
     "auto-rename-tag.activationOnLanguage": ["html", "xml", "php", "javascript","jsx"],
-    "emmet.includeLanguages": {"django-html": "html"},
+    "emmet.includeLanguages": {
+        "django-html": "html",
+        "javascript": "javascriptreact"
+    },
     "files.associations": {
-        // extension name : html
-        "*.ejs": "html",
-        "*.js": "html",
-        "*.py": "html",
-        "*.jsx": "html",
+        // Only for extensions VS Code cannot identify on its own.
+        "*.ejs": "html"
+    }
 
-    } 
-    
 }

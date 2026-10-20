@@ -19,14 +19,18 @@ plugins=(
   zsh-syntax-highlighting
 )
 
-# Source Oh My Zsh - This comes after initial PATH setup.
-source "$ZSH/oh-my-zsh.sh"
+# Source Oh My Zsh - This comes after initial PATH setup. Absent on a fresh machine.
+[ -s "$ZSH/oh-my-zsh.sh" ] && source "$ZSH/oh-my-zsh.sh"
 
 
 # --- Custom User PATH Additions and Configurations ---
 
-# Homebrew environment setup (from 'brew shellenv' - recommended by Homebrew)
-eval "$(/opt/homebrew/bin/brew shellenv)"
+# Homebrew environment setup (from 'brew shellenv' - recommended by Homebrew).
+# Apple Silicon first, then Intel/Linux; silent when Homebrew is not installed.
+for brewbin in /opt/homebrew/bin/brew /usr/local/bin/brew; do
+  [ -x "$brewbin" ] && eval "$("$brewbin" shellenv)" && break
+done
+unset brewbin
 
 # Homebrew Python path (ensure it's only added once - redundant if brew shellenv handles it, but kept for certainty)
 # export PATH="/opt/homebrew/opt/python@3.12/libexec/bin:$PATH"
@@ -38,11 +42,11 @@ export NVM_DIR="$HOME/.nvm"
 
 # --- Managed by Rancher Desktop (DO NOT EDIT) ---
 # Moved here to ensure goenv shims are at the front of PATH.
-export PATH="/Users/riaz/.rd/bin:$PATH"
-# --- MANAGED BY RANCHER DESKTOP END ---
-
-# Kubeconfig and Go Private Repo settings
-export KUBECONFIG="/Users/riaz/.kube/config"
+[ -d "$HOME/.rd/bin" ] && export PATH="$HOME/.rd/bin:$PATH"
+# --- MANAGED BY RANCHER DE<company>ND ---
+<company>
+# Kubeconfig and Go Private R<company>tings
+export KUBECONFIG="$HOME/.kube/config"
 # export GOPRIVATE="github.kyndryl.net/Observe-Automation/*"
 # export GOPRIVATE="github.com/kyndryl-cto/*"
 export GOPRIVATE="github.com/kyndryl*"
@@ -93,14 +97,14 @@ alias down="docker-compose down"
 alias nd="npm run dev"
 
 alias log="kubectl logs -n observe -f"
-alias lg="bash /Users/riaz/Documents/personal/automations/logs/podlogs.sh"
+alias lg="bash $HOME/Documents/personal/automations/logs/podlogs.sh"
 alias pods="kubectl get pods -n observe"
-alias deployments="kubectl get deployments -n observe"
+alias deployments="kubectl get deploymen<company>bserve"
 alias jobs="kubectl get jobs -n observe"
 # alias mods="bash /Users/riaz/Documents/personal/automations/go/update-mods/update-mods.sh"
 # alias merge2main="bash /Users/riaz/Documents/personal/automations/git/merge2main.sh"
 # alias sbx="cd '/Users/riaz/OneDrive - kyndryl/sandbox' && code ."
-alias sbx="code '/Users/riaz/Documents/personal/sandbox/'"
+alias sbx="code \"$HOME/Documents/personal/sandbox/\""
 
 
 # # --- Go Test Aliases ---
@@ -121,7 +125,7 @@ alias sbx="code '/Users/riaz/Documents/personal/sandbox/'"
 export PATH="/Users/riaz/.rd/bin:$PATH"
 ### MANAGED BY RANCHER DESKTOP END (DO NOT EDIT)
 
-. "$HOME/.local/bin/env"
+[ -s "$HOME/.local/bin/env" ] && . "$HOME/.local/bin/env"
 
 # # >>> conda initialize >>>
 # # !! Contents within this block are managed by 'conda init' !!
@@ -140,5 +144,6 @@ export PATH="/Users/riaz/.rd/bin:$PATH"
 # # <<< conda initialize <<<
 
 # shell integration for VSCode terminal (MUST be last to avoid conda/theme overriding output markers)
-[[ "$TERM_PROGRAM" == "vscode" ]] && . "$(code --locate-shell-integration-path zsh)"
+[[ "$TERM_PROGRAM" == "vscode" ]] && command -v code >/dev/null && \
+  . "$(code --locate-shell-integration-path zsh)"
 export PATH="$PATH:/usr/local/go/bin"

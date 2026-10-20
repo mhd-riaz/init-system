@@ -1,16 +1,16 @@
 [user]
-	name = mohamed-riaz_kyndryl
-	email = mohamed.riaz@kyndryl.com
+	name = mohamed-riaz_<company>
+	email = mohamed.riaz@<company>.com
 	signingkey = /Users/riaz/.ssh/id_ed25519_personal.pub
 
 [includeIf "gitdir:/Users/riaz/Documents/personal/"]
     path = ~/.gitconfig-personal
 
 [includeIf "hasconfig:remote.*.url:*cto*"]
-	path = ~/.gitconfig-kyndryl
+	path = ~/.gitconfig-<company>
 
-[includeIf "hasconfig:remote.*.url:*kyndryl*"]
-	path = ~/.gitconfig-kyndryl
+[includeIf "hasconfig:remote.*.url:*<company>*"]
+	path = ~/.gitconfig-<company>
 
 [gpg]
 	format = ssh

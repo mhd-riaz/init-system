@@ -4,16 +4,16 @@
       "type": "http",
       "url": "https://mcp.context7.com/mcp",
       "headers": {
-        "CONTEXT7_API_KEY": "ctx7sk-18decaf5-e7f0-45aa-8842-551475f19302"
+        "CONTEXT7_API_KEY": "<token>"
       }
     }
   },
   "firstStartTime": "2026-08-26T17:46:45.402Z",
-  "machineID": "15cc6592e64b1b1563688574f2441b8125f9194b23f78a01c6a66e9c82c40a7d",
+  "machineID": "<machine-id>",
   "opusProMigrationComplete": true,
   "sonnet1m45MigrationComplete": true,
   "seenNotifications": {},
   "hasResetAutoModeOptInForDefaultOffer": true,
   "migrationVersion": 13,
-  "userID": "ca96f4d95907ade9fc9f6d1d1bfe325af499218b33c0d474c2a044b33ab07a45"
+  "userID": "<user-id>"
 }
