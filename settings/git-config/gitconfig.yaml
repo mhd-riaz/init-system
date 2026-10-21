@@ -1,0 +1,99 @@
+# gitconfig.yaml - the source of truth for ~/.gitconfig.
+#
+# One entry per GitHub account (work, personal, a client, ...). ./install.sh
+# turns this file into:
+#
+#   ~/.gitconfig            the fallback identity, shared settings, switch rules
+#   ~/.gitconfig-<id>       one per account, pulled in when a rule matches
+#   ~/.ssh/config           a Host alias per account, inside a managed block
+#   ~/.ssh/allowed_signers  so `git log --show-signature` can verify your own commits
+#
+# How the switching works: git reads ~/.gitconfig top to bottom, then every
+# includeIf whose condition matches, each overriding what came before. So the
+# [user] block at the top is the fallback, and an account wins wherever its
+# rules match. Nothing is magic - `git config --show-origin user.email` inside
+# any repo tells you which file won.
+#
+# Fill in the placeholders below before running install.sh; it refuses to
+# generate while an address still says example.com.
+
+# Which account the [user] block at the top of ~/.gitconfig describes. Used by
+# every repo that matches no rule at all.
+default_account: personal
+
+accounts:
+  - id: personal
+    name: your-github-username
+    email: you@example.com
+    host: github.com
+    ssh:
+      # Host alias written into ~/.ssh/config. Clone through it and this
+      # account's key and identity are both picked automatically:
+      #   git clone git@github-personal:you/repo.git
+      alias: github-personal
+      key: ~/.ssh/id_ed25519_personal
+    # true adds commit.gpgsign, so every commit in this account's repos is
+    # signed with the key above. install.sh checks the key exists first,
+    # because a missing one fails every commit.
+    sign: true
+    match:
+      # Any repo under these directories. The trailing slash matters.
+      dirs:
+        - ~/Documents/personal/
+      # Extra substrings to look for in a repo's remote URL: a host, an org,
+      # anything that identifies this account. The ssh.alias above is matched
+      # automatically, so this is only for repos cloned some other way.
+      #
+      # These are plain substrings, not globs -- install.sh wraps each one so
+      # it matches a whole component of the URL. A substring containing a
+      # slash can never match and is rejected.
+      remotes: []
+
+  - id: work
+    name: your-work-username
+    email: you@example.com
+    host: github.com
+    ssh:
+      alias: github-work
+      key: ~/.ssh/id_ed25519_work
+    sign: true
+    match:
+      dirs:
+        - ~/work/
+      # e.g. your company's GitHub host or org, for repos cloned over HTTPS:
+      #   - github.company.com
+      #   - acme-corp
+      remotes: []
+
+common:
+  # Shared by every account, written once at the top of ~/.gitconfig.
+  gpg_format: ssh
+  push_auto_setup_remote: true
+  # Lets git verify signatures made by the keys above. Empty disables it.
+  allowed_signers: ~/.ssh/allowed_signers
+  # Anything this file does not model, copied in verbatim.
+  extra: ""
+
+auth:
+  # ssh   - one key per account plus the Host aliases above. Works for any
+  #         number of accounts on the same host. Recommended.
+  #
+  # netrc - HTTPS with a token per machine in ~/.netrc. Note the limit before
+  #         choosing it: netrc matches on the machine name alone, so two
+  #         accounts on the same host cannot be told apart. It only works when
+  #         your accounts live on different hosts, for example github.com and
+  #         github.company.com. Tokens sit in that file in plain text, so it
+  #         must be chmod 600 and must never be committed.
+  method: ssh
+
+vscode:
+  # Feeds the git-autoconfig extension (shyykoserhiy.git-autoconfig), which
+  # asks which identity to use when it finds a repo with no LOCAL user.email.
+  #
+  # It reads local config only, so it cannot see the includeIf rules above and
+  # would ask in every repo. install.sh therefore also generates
+  # ignoreRootList from the match.dirs above: the rules own those directories,
+  # the extension handles everything outside them, and they stay out of each
+  # other's way. Picking an identity in the extension writes a local
+  # user.email, which beats any rule - that is your per-repo override.
+  enabled: true
