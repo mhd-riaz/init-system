@@ -12,15 +12,24 @@ before claims, documentation before recall — in a form that survives changing 
 ```sh
 git clone <this-repo> ~/repos/agent-skills
 cd ~/repos/agent-skills
-./agent-tools/install.sh --dry-run        # see what would happen
-./agent-tools/install.sh                  # symlink into every provider
+./install.sh                              # interactive: pick providers and keep-or-replace
+```
+
+`install.sh` reports the detected OS (macOS, Linux, WSL, Windows under Git Bash), shows a
+space-bar checklist of providers, asks whether to keep or replace existing files, installs,
+then prints a verified summary of what landed where. Prefer flags? They pass straight through
+to the non-interactive `agent-tools/install.sh`:
+
+```sh
+./install.sh --dry-run                    # see what would happen
+./install.sh --providers claude,codex     # skip the questions entirely
 ```
 
 Symlinks mean editing a skill here updates every provider immediately. Use
 `--mode copy` for isolated copies instead.
 
 **The installer never deletes anything.** An existing file is skipped with a warning;
-`--force` moves it to `<name>.bak-<timestamp>` first.
+`--force` (or choosing *replace*) moves it to `<name>.bak-<timestamp>` first.
 
 | Flag | Effect |
 |---|---|
@@ -29,10 +38,22 @@ Symlinks mean editing a skill here updates every provider immediately. Use
 | `--dry-run` | print actions without performing them |
 | `--force` | back up and replace existing entries |
 
+| Provider | Skills | Always-on entry point |
+|---|---|---|
+| `claude` | `~/.claude/skills` | `~/.claude/CLAUDE.md` |
+| `codex` | `~/.codex/skills` and `~/.agents/skills` | `~/.codex/AGENTS.md` |
+| `copilot-cli` | `~/.copilot/skills` | `~/.copilot/copilot-instructions.md` |
+| `vscode` | `~/.config/github-copilot/skills` | user `prompts/agent-rules.instructions.md` |
+| `gemini` | `~/.gemini/skills` | `~/.gemini/GEMINI.md` |
+| `agents-md` | — | `~/AGENTS.md` |
+
+The hosted chat UIs (claude.ai, chatgpt.com, gemini.google.com) have no local skills
+directory — upload skills there by hand.
+
 Provider directories move between releases. Override without editing the script:
 
 ```sh
-CLAUDE_HOME=~/.config/claude VSCODE_SKILLS_DIR=~/somewhere ./agent-tools/install.sh
+CLAUDE_HOME=~/.config/claude VSCODE_SKILLS_DIR=~/somewhere ./install.sh
 ```
 
 Skills install into each provider's skills directory; `rules/` is inlined into the one

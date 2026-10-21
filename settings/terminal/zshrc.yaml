@@ -1,0 +1,199 @@
+# zshrc.yaml - the source of truth for ~/.zshrc.
+#
+# Edit this file, then run ./install.sh to regenerate ~/.zshrc.
+# Do not edit ~/.zshrc by hand: install.sh replaces it (after backing it up).
+#
+# Rules of the file:
+#   * `enabled: false` leaves the whole block out of the generated file.
+#   * Values are written into the generated file inside double quotes, so
+#     "$HOME/..." stays lazy and resolves when the shell starts.
+#   * Alias bodies are written inside single quotes, so "$VAR" inside one
+#     resolves when you run the alias, not when the shell starts.
+#   * install.sh checks that each enabled feature's tool exists and, if it does
+#     not, prints the install command for your OS and waits for you.
+#
+# Windows: there is no iTerm and no real zsh, so Git Bash and MSYS2 cannot show
+# the Oh My Zsh theme. Install WSL (`wsl --install -d Ubuntu`), run install.sh
+# from inside it, and set `wsl.enabled: true` below. install.sh says the same
+# thing if you run it on Windows anyway.
+
+path:
+  # Exported first, before anything else runs, so later blocks can find binaries.
+  # This replaces PATH outright rather than adding to it, so under WSL the
+  # Windows directories that interop injects are dropped here -- which is what
+  # most people want. The `wsl` block below adds back the one that matters.
+  base:
+    - /opt/homebrew/bin
+    - /opt/homebrew/sbin
+    - /usr/local/bin
+    - /usr/bin
+    - /bin
+    - /usr/sbin
+    - /sbin
+  # Appended at the very end, after every tool has had its say.
+  append:
+    - /usr/local/go/bin
+
+oh_my_zsh:
+  enabled: true
+  dir: $HOME/.oh-my-zsh
+  theme: bureau
+  update:
+    mode: auto # auto | reminder | disabled
+    frequency: 7 # days
+  hist_stamps: yyyy-mm-dd
+  # Plugins that are not bundled with Oh My Zsh are reported by install.sh
+  # with a git clone command for your OS.
+  plugins:
+    - git
+    - zsh-autosuggestions
+    - zsh-syntax-highlighting
+
+homebrew:
+  # Runs `brew shellenv` from whichever prefix exists (Apple Silicon, then
+  # Intel/Linux), and stays silent when Homebrew is not installed.
+  enabled: true
+
+tools:
+  nvm:
+    enabled: true
+    dir: $HOME/.nvm
+
+  rancher_desktop:
+    # Puts ~/.rd/bin at the front of PATH so its shims win.
+    enabled: true
+
+  kubernetes:
+    enabled: true
+    kubeconfig: $HOME/.kube/config
+    # Namespace used by the generated kubectl aliases below.
+    namespace: observe
+    # pods / deployments / jobs / log, all scoped to `namespace`.
+    aliases: true
+
+  go:
+    enabled: true
+    goprivate: github.com/kyndryl*
+
+  local_bin_env:
+    # Sourced when present; `uv` and friends drop an env file here.
+    enabled: true
+    file: $HOME/.local/bin/env
+
+  conda:
+    enabled: false
+    prefix: $HOME/miniconda3
+    # false runs `conda deactivate` so base is not active in every shell.
+    auto_activate_base: false
+
+  vscode_shell_integration:
+    # Always rendered last: anything after it can clobber its output markers.
+    enabled: true
+
+editor:
+  # if SSH session -> ssh, else local.
+  enabled: false
+  local: nvim
+  ssh: vim
+
+wsl:
+  # Off by default: turn it on only on a Windows machine running WSL.
+  # The generated block is wrapped in a `$WSL_DISTRO_NAME` test anyway, so the
+  # same config stays harmless on macOS and plain Linux.
+  #
+  # Getting there:
+  #   1. PowerShell (as admin):  wsl --install -d Ubuntu
+  #   2. reboot, open Ubuntu from Windows Terminal (not the old console host)
+  #   3. sudo apt update && sudo apt install -y zsh git curl
+  #   4. chsh -s "$(which zsh)"
+  #   5. clone this repo inside WSL and run ./install.sh there
+  enabled: false
+
+  # `path.base` above replaces PATH, so the Windows entries WSL injects are
+  # gone by the time this runs. Add back only what interop actually needs --
+  # System32 is what makes explorer.exe, clip.exe and powershell.exe resolve.
+  # This is deliberately not the whole Windows PATH, which is the thing that
+  # makes WSL completion crawl.
+  windows_path:
+    - /mnt/c/Windows/System32
+
+  # Makes xdg-open, `gh auth login` and friends open the Windows browser.
+  # Provided by wslu: sudo apt install -y wslu. Leave empty to skip.
+  browser: wslview
+
+  # open / pbcopy / pbpaste, same names as on macOS, backed by Windows binaries.
+  interop_aliases: true
+
+  # $WINHOME for hopping to the Windows side. Your Windows username is often
+  # not your Linux one, so set it explicitly if $USER does not match.
+  win_home: /mnt/c/Users/$USER
+
+  # Only for an external X server (VcXsrv, X410) on Windows 10. WSLg on
+  # Windows 11 sets DISPLAY itself, so leave this off there.
+  x11_display: false
+
+env:
+  # Free-form exports, rendered in order.
+  # - name: ARCHFLAGS
+  #   value: -arch $(uname -m)
+
+aliases:
+  # group -> alias -> command. Delete a group to drop it.
+  shell:
+    c: clear
+    zshconfig: code ~/.zshrc
+    ohmyzsh: code ~/.oh-my-zsh
+    # Nukes history and kills the current shell. Handle with care.
+    clean: echo > ~/.zsh_history && kill -9 $$
+    sbx: code "$HOME/Documents/personal/sandbox/"
+    i: bash ./install.sh
+    u: bash ./uninstall.sh
+
+  git:
+    gpm: git pull origin master --rebase
+    gpmn: git pull origin main --rebase
+
+  go:
+    g: go run main.go
+    cg: cd cmd && go run main.go
+
+  node:
+    nd: npm run dev
+    pretty: npx prettier --write .
+    eslint: npx eslint --fix .
+
+  docker:
+    up: docker-compose up -d --build
+    down: docker-compose down
+
+  scripts:
+    lg: bash $HOME/Documents/personal/automations/logs/podlogs.sh
+
+  # Go coverage helpers. Uncomment the group to get them back; each one is a
+  # single line, so keep the continuations out.
+  # go_test:
+  #   tp: go test -coverpkg=./... -covermode=atomic -coverprofile=coverage.out.tmp $(go list ./... | grep -vE ".*_mocks\.go$") && grep -vE ".*_mocks\.go$" coverage.out.tmp > coverage.out && go tool cover -func=coverage.out | grep total | grep -Eo "[0-9]+\.[0-9]+%"
+  #   seecoverage: go tool cover -html=coverage.out
+
+functions:
+  # name -> body. Rendered as `name() { body }`.
+  swagger: |
+    local module_dir
+
+    if [[ -f ./cmd/main.go ]]; then
+        module_dir="."
+    elif [[ -f ./sms-server/cmd/main.go ]]; then
+        module_dir="./sms-server"
+    else
+        print -u2 "swagger: no cmd/main.go found in this directory or ./sms-server"
+        return 1
+    fi
+
+    (
+        cd "$module_dir" || return
+        swag fmt && swag init --parseInternal -g ./cmd/main.go -o ./docs
+    )
+
+# Anything this file does not model. Copied in verbatim, just before the
+# PATH appends and the VS Code block.
+raw: ""

@@ -17,10 +17,11 @@ agent-skills/
 ├── INDEX.md           map of the bundle (plain .md, never auto-discovered)
 ├── AUDIT-LOG.md       dated findings; changelog entries cite these IDs
 ├── README.md          human-facing install guide (never loaded by an agent)
+├── install.sh         interactive installer front end
 ├── rules/             always-on policies, tiny, provider-neutral
 ├── _shared/           procedures referenced by 2+ skills, no frontmatter
 ├── templates/         output templates skills emit verbatim
-├── tools/             validate.py, install.sh
+├── agent-tools/       validate.py, install.sh, selftest.sh
 └── skills/<name>/SKILL.md
 ```
 

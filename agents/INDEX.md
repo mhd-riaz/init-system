@@ -66,6 +66,7 @@ see `AUDIT-LOG.md` B7.
 | `agent-tools/validate.py` | spec enforcement; must print `0 non-compliant` |
 | `agent-tools/token-report.py` | cache hit rate, uncached cost, re-read ratio; re-run to re-measure |
 | `agent-tools/install.sh` | symlink or copy into each provider; non-destructive by default |
+| `install.sh` | interactive front end for the above — OS detection, provider checklist, keep-or-replace |
 | `agent-tools/selftest.sh` | regression check for the installer, config reader, baseline compare and validator |
 | `templates/SKILL.template.md` | starting point for a new skill |
 | `templates/agent-config.template.yml` | starting point for a repo's `.agent/config.yml` |

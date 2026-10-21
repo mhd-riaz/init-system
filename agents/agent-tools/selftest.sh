@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Regression check for the seams that broke silently before (AUDIT-LOG B29-B33, B40).
+# Regression check for the seams that broke silently before (AUDIT-LOG B29-B33, B40),
+# plus the installer's provider targets, keep-vs-replace behaviour and backups.
 # Prints one line per assertion and exits non-zero on the first failure.
 #
 #   agent-tools/selftest.sh
@@ -89,6 +90,33 @@ has "generated instructions carry the rules" "$(cat "$TMP/inst/prompts/agent-rul
 echo "bundle validates"
 is "0 non-compliant" "$(cd "$BUNDLE" && python3 agent-tools/validate.py | sed -n 's/^\([0-9]*\) non-compliant.*/\1/p')" "0"
 
+echo "installer — keep vs replace, and the per-provider targets"
+H="$TMP/home"; mkdir -p "$H"
+run() { env -u COPILOT_HOME -u CLAUDE_HOME -u CODEX_HOME -u GEMINI_HOME \
+            -u CODEX_SKILLS_DIR -u AGENTS_SKILLS_DIR -u AGENTS_MD_DIR \
+            -u VSCODE_SKILLS_DIR -u VSCODE_INSTRUCTIONS_DIR \
+            HOME="$H" "$BUNDLE/agent-tools/install.sh" "$@" 2>&1; }
+
+out=$(run --providers claude,codex,gemini)
+has "every target verifies"   "$out" "skills    ok"
+hasnt "nothing reported missing" "$out" "MISSING"
+[ -f "$H/.gemini/skills/write-code/SKILL.md" ] && ok "gemini skills dir" || bad "gemini skills dir" "not found"
+[ -f "$H/.gemini/GEMINI.md" ]                  && ok "gemini entry point" || bad "gemini entry point" "not found"
+[ -f "$H/.codex/skills/write-code/SKILL.md" ]  && ok "codex skills dir"  || bad "codex skills dir" "not found"
+[ -f "$H/.agents/skills/write-code/SKILL.md" ] && ok "codex cross-agent dir" || bad "codex cross-agent dir" "not found"
+
+printf 'MY OWN NOTES\n' > "$H/.claude/CLAUDE.md"
+has "existing file is skipped, not clobbered" "$(run --providers claude)" "skip      left alone"
+is   "...and its content survives" "$(cat "$H/.claude/CLAUDE.md")" "MY OWN NOTES"
+
+has "--force reports the backup" "$(run --providers claude --force)" "backup    saved"
+is   "...old content is in the .bak file" "$(cat "$H"/.claude/CLAUDE.md.bak-* 2>/dev/null)" "MY OWN NOTES"
+hasnt "...and the new file replaced it" "$(cat "$H/.claude/CLAUDE.md")" "MY OWN NOTES"
+
+echo "interactive wrapper — non-tty and flag passthrough"
+wrapper() { env -u COPILOT_HOME HOME="$H" "$BUNDLE/install.sh" "$@" 2>&1; }
+has "flags go straight to the real installer" "$(wrapper --dry-run --providers claude)" "dry run"
+has "no tty falls back instead of hanging"    "$(wrapper </dev/null)" "not a terminal"
 echo
 [ "$fails" -eq 0 ] && { echo "all checks passed"; exit 0; }
 echo "$fails check(s) failed"; exit 1

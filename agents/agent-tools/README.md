@@ -127,20 +127,39 @@ Re-measure after changing habits rather than re-arguing.
 ## install.sh
 
 ```sh
+./install.sh                        # interactive: pick providers, pick keep-or-replace
 agent-tools/install.sh --dry-run
 agent-tools/install.sh [--providers claude,codex] [--mode copy] [--force]
 ```
 
-Symlinks or copies the bundle into each provider. Non-destructive: existing files are
-skipped unless `--force`, which backs them up first.
+The top-level `install.sh` is a prompt-only front end: it reports the detected OS, offers
+a space-bar checklist of providers, asks whether to keep or replace what is already there,
+then hands off to this script. Any flag passed to it goes straight through. With no tty it
+installs everything non-destructively instead of hanging.
 
-Skills go to each provider's skills directory — Codex's is `$HOME/.agents/skills`, not
-`$CODEX_HOME/skills`. `rules/` is **inlined** into the single always-on entry point each
-provider actually reads (`CLAUDE.md`, `AGENTS.md`, `copilot-instructions.md`, a VS Code
-user `*.instructions.md`); a directory of plain rule files is read by none of them
-(`AUDIT-LOG.md` B29). Copy mode also copies `_shared/`, `templates/`, `rules/` and
-`agent-tools/` beside the skills directory, without which every `../../_shared/...`
-reference in a copied skill resolves to nothing (B30).
+Symlinks or copies the bundle into each provider. Non-destructive: existing files are
+skipped unless `--force`, which backs them up to `<name>.bak-<timestamp>` first. Every run
+ends with a summary listing each target, its backup, and `ok` / `MISSING` per target;
+a missing target exits non-zero.
+
+| Provider | Skills | Always-on entry point |
+|---|---|---|
+| `claude` | `~/.claude/skills` | `~/.claude/CLAUDE.md` |
+| `codex` | `~/.codex/skills` **and** `~/.agents/skills` | `~/.codex/AGENTS.md` |
+| `copilot-cli` | `~/.copilot/skills` | `~/.copilot/copilot-instructions.md` |
+| `vscode` | `~/.config/github-copilot/skills` | user `prompts/agent-rules.instructions.md` |
+| `gemini` | `~/.gemini/skills` | `~/.gemini/GEMINI.md` |
+| `agents-md` | — | `~/AGENTS.md` |
+
+Codex reads both skill locations depending on build, so both are written. Only the VS Code
+user directory is OS-dependent (`~/Library/Application Support` on macOS, `%APPDATA%` under
+Git Bash/MSYS, `~/.config` elsewhere). The hosted chat UIs — claude.ai, chatgpt.com,
+gemini.google.com — have no local skills directory; upload skills there by hand.
+
+`rules/` is **inlined** into the single always-on entry point each provider actually reads;
+a directory of plain rule files is read by none of them (`AUDIT-LOG.md` B29). Copy mode also
+copies `_shared/`, `templates/`, `rules/` and `agent-tools/` beside the skills directory,
+without which every `../../_shared/...` reference in a copied skill resolves to nothing (B30).
 
 ## selftest.sh
 
