@@ -13,8 +13,8 @@ the machine the agent runs on.
 ## Install
 
 ```sh
-git clone git@github.com:mhd-riaz/init-system.git ~/repos/init-system
-cd ~/repos/init-system/agents
+git clone https://github.com/mhd-riaz/init-system.git
+cd init-system/agents
 ./install.sh                              # interactive: pick providers and keep-or-replace
 ```
 

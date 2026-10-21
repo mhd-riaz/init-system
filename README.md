@@ -11,8 +11,8 @@ Nothing secret is stored here.
 ## Start here
 
 ```sh
-git clone git@github.com:mhd-riaz/init-system.git ~/repos/init-system
-cd ~/repos/init-system
+git clone https://github.com/mhd-riaz/init-system.git
+cd init-system
 
 cd settings/terminal   && ./install.sh    # ~/.zshrc
 cd ../git-config       && ./install.sh    # ~/.gitconfig + SSH identities
@@ -42,7 +42,8 @@ the bundle; read it before opening individual skills.
   `--force` (agents) or a replace prompt (settings) moves it to
   `<name>.bak-<timestamp>` first.
 - **Symlinks for the agent bundle.** Editing a skill here updates every provider
-  immediately; `--mode copy` gives isolated copies instead.
+  immediately — but the links point at this checkout, so clone it somewhere permanent or
+  re-run the installer after moving it. `--mode copy` gives isolated copies instead.
 - **Every claim in these docs is checkable.** `cd agents && python3
   agent-tools/validate.py` must print `0 non-compliant`, and
   `agent-tools/selftest.sh` must pass, before anything is committed.
