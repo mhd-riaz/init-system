@@ -1,4 +1,4 @@
-# Index — agent-skills
+# Index — agents
 
 Map of this bundle. Plain `.md`, never a `SKILL.md`, so no agent auto-discovers it and
 it costs nothing until opened. Read this first when orienting. Do not bulk-read skills.
@@ -57,7 +57,7 @@ see `AUDIT-LOG.md` B7.
 | Path | What it is |
 |---|---|
 | `SPEC.md` | the authoring contract — frontmatter, 600-char cap, required sections, versioning |
-| `AUDIT-LOG.md` | findings `B1`-`B26`; changelog entries cite these IDs |
+| `AUDIT-LOG.md` | findings `B1`-`B45`; changelog entries cite these IDs |
 | `agent-tools/README.md` | **index of runnable scripts — read this before deriving facts by hand** |
 | `agent-tools/repo-facts.sh` | repo root, remote, host, branch, tracker, config, stack in one call |
 | `agent-tools/test-run.sh` | test run with per-package table, abort-early fallback, baseline compare |

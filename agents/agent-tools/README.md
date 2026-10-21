@@ -118,7 +118,7 @@ Structural only — a compliant bundle is not a working one.
 ## token-report.py
 
 ```sh
-python3 agent-tools/token-report.py [--days N]
+python3 agent-tools/token-report.py [--days N] [--db PATH]
 ```
 
 Cache hit rate, effective versus raw token cost, most expensive sessions, re-read ratio.

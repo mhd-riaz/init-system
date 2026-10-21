@@ -12,7 +12,7 @@ the `USE FOR` / `DO NOT USE FOR` boundary convention from `microsoft-foundry`.
 ## 1. Layout
 
 ```
-agent-skills/
+agents/
 ├── SPEC.md            this file — the contract
 ├── INDEX.md           map of the bundle (plain .md, never auto-discovered)
 ├── AUDIT-LOG.md       dated findings; changelog entries cite these IDs

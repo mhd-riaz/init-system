@@ -1,4 +1,4 @@
-# agent-skills
+# agents — the skill bundle
 
 A portable skill bundle for AI coding agents. One source of truth, installed into
 Claude Code, OpenAI Codex, Copilot CLI, VS Code, and any `AGENTS.md` consumer
@@ -7,11 +7,14 @@ Claude Code, OpenAI Codex, Copilot CLI, VS Code, and any `AGENTS.md` consumer
 Skills encode *how I want an agent to work* — approval before implementation, evidence
 before claims, documentation before recall — in a form that survives changing providers.
 
+This is one half of [`init-system`](../README.md); the other half, `settings/`, configures
+the machine the agent runs on.
+
 ## Install
 
 ```sh
-git clone <this-repo> ~/repos/agent-skills
-cd ~/repos/agent-skills
+git clone git@github.com:mhd-riaz/init-system.git ~/repos/init-system
+cd ~/repos/init-system/agents
 ./install.sh                              # interactive: pick providers and keep-or-replace
 ```
 
@@ -59,8 +62,8 @@ CLAUDE_HOME=~/.config/claude VSCODE_SKILLS_DIR=~/somewhere ./install.sh
 Skills install into each provider's skills directory; `rules/` is inlined into the one
 always-on entry point each provider actually discovers — `CLAUDE.md`, `AGENTS.md`,
 `copilot-instructions.md`, or a VS Code user `*.instructions.md`. Copy mode also copies
-`_shared/`, `templates/` and `rules/` beside the skills directory, because a skill's
-`../../_shared/...` reference resolves through a symlink but not through a copy.
+`_shared/`, `templates/`, `rules/` and `agent-tools/` beside the skills directory, because a
+skill's `../../_shared/...` reference resolves through a symlink but not through a copy.
 
 Restart your agent after installing so it picks up new skills.
 
@@ -71,6 +74,9 @@ Restart your agent after installing so it picks up new skills.
 | `skills/` | 13 workflow skills, auto-discovered by the agent |
 | `rules/` | always-on policies — secrets, context, evidence, docs, paths, repo config |
 | `_shared/` | procedures referenced by multiple skills, linked never duplicated |
+| `agent-tools/` | runnable scripts the agent executes instead of re-deriving facts — [index](agent-tools/README.md) |
+| `templates/` | starting points for a new skill and a repo's `.agent/config.yml` |
+| `install.sh` | interactive front end for `agent-tools/install.sh` |
 | `SPEC.md` | the authoring contract |
 | `INDEX.md` | map of the bundle — **start here** |
 | `AUDIT-LOG.md` | the findings that justify each design decision |
