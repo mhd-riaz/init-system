@@ -67,6 +67,114 @@ skill's `../../_shared/...` reference resolves through a symlink but not through
 
 Restart your agent after installing so it picks up new skills.
 
+## Example: GitHub Copilot, start to finish
+
+Copilot is two separate targets — the CLI and VS Code. Install both:
+
+```sh
+cd init-system/agents
+./install.sh
+```
+
+**Step 1 — providers.** Arrow keys move, space toggles, enter confirms. Everything is
+checked by default, so space-off the ones you do not use and leave these two on:
+
+```
+  > [x] copilot-cli   GitHub Copilot CLI    ~/.copilot/skills + copilot-instructions.md
+    [x] vscode        VS Code Copilot       Copilot skills dir + user .instructions.md
+```
+
+**Step 2 — existing files.** Answer `1` the first time (nothing is there to clash with).
+Answer `2` on a re-install **only** when you want the generated instructions file
+refreshed — it backs the old one up to `<name>.bak-<timestamp>` before overwriting.
+
+```
+  1) keep them  - add only what is missing, touch nothing else (default)
+  2) replace    - back up each one to <name>.bak-<timestamp>, then overwrite
+choice [1]: 1
+```
+
+**Step 3 — read the summary.** Every target must say `ok`; a `MISSING` exits non-zero.
+
+```
+  skills    ok         /Users/you/.copilot/skills  (13/13 skills)
+  generate  ok         /Users/you/.copilot/copilot-instructions.md
+  skills    ok         /Users/you/.config/github-copilot/skills  (13/13 skills)
+  generate  ok         /Users/you/Library/Application Support/Code/User/prompts/agent-rules.instructions.md
+```
+
+Prefer no prompts? The same thing in one line, and a dry run first:
+
+```sh
+./install.sh --providers copilot-cli,vscode --dry-run
+./install.sh --providers copilot-cli,vscode
+```
+
+**Step 4 — restart Copilot** (quit the CLI, reload the VS Code window). Skills are read
+at startup.
+
+**Step 5 — check it took.** Ask Copilot *"which skills do you have?"*, or look directly:
+
+```sh
+ls ~/.copilot/skills                      # 13 symlinks back into this repo
+head -20 ~/.copilot/copilot-instructions.md
+```
+
+The generated instructions file is `rules/` inlined plus the skill list — regenerated,
+never hand-edited. Change a rule here and re-run with `--force`.
+
+## Per-repository config
+
+Skill defaults are deliberately generic. A repository overrides them with
+`.agent/config.yml`, which every skill reads before doing anything
+([`rules/repo-config.md`](rules/repo-config.md)). Without it, a skill guesses from the
+git remote — and the remote is wrong whenever code and work items live in different
+systems, like a GitHub repo whose tickets are in Azure DevOps.
+
+```sh
+mkdir -p .agent
+cp ~/path/to/init-system/agents/templates/agent-config.template.yml .agent/config.yml
+```
+
+Every section is optional; delete what does not apply. A minimal GitHub-issues repo:
+
+```yaml
+version: 1
+
+tracker:
+  system: github                  # ado | github | none
+  commit_prefix: "#{id} "
+  pr_body_reference: "Closes #{id}"
+
+code_host:
+  system: github
+  owner: your-org
+  repo: your-repo
+  default_branch: main
+
+testing:
+  command: ./unit-test.sh
+  coverage:
+    backend: 90
+    frontend: 80
+```
+
+The keys worth knowing:
+
+| Key | Why you would set it |
+|---|---|
+| `tracker.system` | where work items live. `none` silently skips every work-item step |
+| `code_host` | where branches, PRs and CI live, when it differs from the tracker |
+| `testing.command` | the test entry point, so no skill has to guess the runner |
+| `testing.coverage` | project thresholds, which outrank the skill defaults |
+| `skills.disabled` | a listed skill declines in one line instead of running |
+| `devlog` | skips devlog path discovery entirely |
+| `identity` | who new work is assigned to |
+
+`.agent/` is gitignored here; commit it in your own repos so the whole team gets the
+same behaviour. Full schema with every key:
+[`_shared/repo-config.md`](_shared/repo-config.md).
+
 ## What's inside
 
 | | |

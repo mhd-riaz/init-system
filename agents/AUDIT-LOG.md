@@ -272,9 +272,9 @@ makes a mis-route visible instead of invisible.
 landscape, that is **wrong for every work repository**:
 
 ```
-origin   https://github.com/<company>-cto/bdg-eng-tops-obs-sms-server.git
+origin   https://github.com/<company>/dummy-server.git
 commits  AB#3204284 - PX-02 xMatters sender
-items    dev.azure.com/<company>/Bridge/_workitems/edit/3204284
+items    dev.azure.com/<company>/Bridge/_workitems/edit/123123
 ```
 
 Code is hosted on GitHub; work items live in Azure DevOps; `AB#id` is Azure Boards'
